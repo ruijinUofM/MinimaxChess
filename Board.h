@@ -1,7 +1,7 @@
 #ifndef BOARD_H
 #define BOARD_H
 
-#include <string>
+#include "Piece.h"
 #include <iostream>
 
 /*
@@ -11,24 +11,7 @@ piece struct
 
 class Board {
 public:
-    static constexpr const char* const PAWN = "P";
-    static constexpr const char* const ROOK = "R";
-    static constexpr const char* const KNIGHT = "N";
-    static constexpr const char* const BISHOP= "B";
-    static constexpr const char* const QUEEN = "Q";
-    static constexpr const char* const KING = "K";
-    static constexpr const char* const BISHOP_BLACK = "B";
-    static constexpr const char BLACK = 'b';
-    static constexpr const char WHITE = 'w';
     static constexpr const int BOARD_SIZE = 8;
-
-    struct Piece {
-        char side;
-        std::string type;
-        int x;
-        int y;
-    };
-
 
     //Default constructor
     Board();
@@ -37,19 +20,19 @@ public:
 
     Piece remove(int x, int y);
     
-    void put(int x, int y, Piece p);
+    void execute_move(Move move);
 
-    bool in_bounds(int x, int y);
+    bool in_bounds(Move move);
 
-    bool empty_spot(int x, int y);
+    bool empty_spot(Move move);
 
-    bool intersect(int x, int y);
+    bool intersect(Move move);
 
     bool endgame();
 
-    bool checkmate(char side);
+    bool checkmate(char color);
 
-    bool check(char side);
+    bool check(char color);
 
     bool stalemate();
 
@@ -61,6 +44,6 @@ private:
     int turn;
 };
 
-std::ostream &os 
+std::ostream & operator<<(std::ostream &os, const Board &b);
 
 #endif BOARD_H
