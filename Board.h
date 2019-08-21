@@ -18,15 +18,15 @@ public:
 
     Piece get(int x, int y);
 
+    void next_turn();
+
     Piece remove(int x, int y);
     
     void execute_move(Move move);
 
     bool in_bounds(Move move);
 
-    bool empty_spot(Move move);
-
-    bool intersect(Move move);
+    std::vector<Move> generate_valid_moves();
 
     bool endgame();
 
@@ -37,6 +37,8 @@ public:
     bool stalemate();
 
     int score();
+    
+    std::vector<Board> generate_valid_boards();
 
 private:
     Piece board[BOARD_SIZE][BOARD_SIZE];
