@@ -13,8 +13,10 @@ Board::Board() {
     for (int i = 0; i < BOARD_SIZE; i++) {
         board[i][black_pawn_row].set_type(Piece::PAWN);
         board[i][black_pawn_row].set_color(Piece::BLACK);
+        board[i][black_pawn_row].set_pawn_skip(true);
         board[i][black_row].set_color(Piece::BLACK);
         board[i][white_pawn_row].set_type(Piece::PAWN);
+        board[i][white_pawn_row].set_pawn_skip(true);
     }
     board[0][black_row].set_type(Piece::ROOK);
     board[0][white_row].set_type(Piece::ROOK);
@@ -27,8 +29,8 @@ Board::Board() {
     board[6][white_row].set_type(Piece::KNIGHT);
 
     board[2][black_row].set_type(Piece::BISHOP);
-    board[2][black_row].set_type(Piece::BISHOP);
-    board[5][white_row].set_type(Piece::BISHOP);
+    board[5][black_row].set_type(Piece::BISHOP);
+    board[2][white_row].set_type(Piece::BISHOP);
     board[5][white_row].set_type(Piece::BISHOP);
 
     board[3][black_row].set_type(Piece::QUEEN);
@@ -40,6 +42,10 @@ Board::Board() {
 
 Piece Board::get(int x, int y) const {
     return board[x][y];
+}
+
+Piece Board::get(Pos pos) const {
+    return board[pos.x][pos.y];
 }
 
 void Board::next_turn() {
@@ -72,14 +78,15 @@ Piece Board::set(Piece p, int x, int y) {
 }
 
 Piece Board::set(Piece p, Pos pos) {
-    set(p, pos.x, pos.y);
+    return set(p, pos.x, pos.y);
 }
 
 //does not check validity of move!
 void Board::execute_move(Move move) {
     Piece p = remove(move.from);
+    p.set_pawn_skip(false);
     Piece captured = set(p, move.to);
-    if (captured.get_type != Piece::EMPTY) {
+    if (captured.get_type() != Piece::EMPTY) {
         std::cout << "Captured a " << captured << "!" << std::endl;
     }
 }
@@ -88,7 +95,7 @@ bool Board::in_bounds(Move move) const {
     int from_x = move.from.x;
     int from_y = move.from.y;
     if (from_x >= BOARD_SIZE || from_x < 0 || from_y >= BOARD_SIZE || from_y < 0) {
-        std::cout << "Somethings wrong, location of piece out of bounds" << std::endl;
+        std::cout << "Something's wrong, location of piece out of bounds" << std::endl;
         return false;
     }
 
@@ -105,7 +112,8 @@ std::vector<Pos> Board::generate_positions(char c) const {
     std::vector<Pos> positions;
     for (int i = 0; i < BOARD_SIZE; i++) {
         for (int j = 0; j < BOARD_SIZE; j++) {
-            if (board[i][j].get_color == c) {
+            if (board[i][j].get_color() == c && 
+                board[i][j].get_type() != Piece::EMPTY) {
                 positions.push_back({ i, j });
             }
         }
@@ -128,7 +136,7 @@ std::vector<Move> Board::generate_valid_moves(const char ally_char) const {
     for (int i = 0; i < BOARD_SIZE; i++) {
         for (int j = 0; j < BOARD_SIZE; j++) {
             Piece p = board[i][j];
-            upcoming_piece_moves = p.get_moves(to_move, enemy, ally);
+            upcoming_piece_moves = p.get_moves(ally_char, enemy, ally);
             for (int k = 0; k < upcoming_piece_moves.size(); k++) {
                 if (in_bounds(upcoming_piece_moves[k])) {
                     valid_moves.push_back(upcoming_piece_moves[k]);
@@ -203,7 +211,21 @@ std::vector<Board> Board::generate_valid_boards(const char c) const {
     for (int i = 0; i < valid_moves.size(); i++) {
         //Copy not reference
         Board next_board = *this;
+        next_board.execute_move(valid_moves[i]);
         valid_boards.push_back(next_board);
     }
     return valid_boards;
+}
+
+std::ostream & operator<<(std::ostream &os, const Board &b) {
+    os << std::endl << " -- -- -- -- -- -- -- -- " << std::endl;
+    
+    for (int i = 0; i < BOARD_SIZE; i++) {
+        for (int j = 0; j < BOARD_SIZE; j++) {
+            os << "|" << b.get(j, i);
+        }
+        os << "|" << std::endl << " -- -- -- -- -- -- -- -- " << std::endl;
+    }
+    
+    return os;
 }

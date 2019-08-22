@@ -5,18 +5,17 @@
 #include <iostream>
 #include <cassert>
 
+struct Pos {
+    int x;
+    int y;
+    bool operator==(const Pos &rhs) const {
+        return (x == rhs.x && y == rhs.y);
+    }
+};
 
 struct Move {
     Pos from;
     Pos to;
-};
-
-struct Pos {
-    int x;
-    int y;
-    bool operator== (const Pos &rhs) const {
-        return (x == rhs.x & y == rhs.y);
-    }
 };
 
 class Piece {
@@ -47,6 +46,8 @@ public:
 
     void set_x(int x_in);
     void set_y(int y_in);
+
+    void set_pawn_skip(bool skip);
 
     void set_coord(int x_in, int y_in);
 
@@ -82,6 +83,7 @@ private:
     Pos position;
     char color;
     char type;
+    bool pawn_skip;
 };
 
 

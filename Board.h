@@ -10,9 +10,10 @@ Rui Jin: This is the board header file to represent a chess board. Includes a
 piece struct
 */
 
+static constexpr const int BOARD_SIZE = 8;
+
 class Board {
 public:
-    static constexpr const int BOARD_SIZE = 8;
 
     //Default constructor
     Board();
