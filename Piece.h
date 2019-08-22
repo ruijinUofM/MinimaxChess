@@ -50,11 +50,14 @@ public:
 
     void set_coord(int x_in, int y_in);
 
+    void set_coord(Pos pos);
+
     /*this will be painful, needs a big switch statemnt,
     the alternative might be to make a bunch of derived classes
     with dynamic polymorphism which also doesn't seem optimal
     this gives the potential moves of a piece given that it is
-    the right color, otherwise returns an empty vector*/
+    the right color, otherwise returns an empty vector, this also disregards
+    the king being checked or checkmated as a result of the move*/
     std::vector<Move> get_moves(char color_in, const std::vector<Pos> & opponent,
         const std::vector<Pos> & us);
 

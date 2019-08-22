@@ -40,6 +40,7 @@ void Piece::set_type(char type_in) {
 void Piece::set_x(int x_in) {
     position.x = x_in;
 }
+
 void Piece::set_y(int y_in) {
     position.y = y_in;
 }
@@ -49,6 +50,9 @@ void Piece::set_coord(int x_in, int y_in) {
     position.y = y_in;
 }
 
+void Piece::set_coord(Pos pos) {
+    position = pos;
+}
 
 //my first time using switch syntax --doublecheck--
 //checks for hitting other pieces but not going out of bounds.
@@ -98,8 +102,12 @@ std::vector<Move> Piece::get_moves(char color_in, const std::vector<Pos> & oppon
             Pos left = { to_x - 1, to_y };
             Pos right = { to_x + 1, to_y };
             add_if_ally_valid(potential_moves, us, forward);
-            add_if_ally_valid(potential_moves, us, left);
-            add_if_ally_valid(potential_moves, us, right);
+            if (hit_piece(left, opponent)) {
+                add_if_ally_valid(potential_moves, us, left);
+            }
+            if (hit_piece(right, opponent)) {
+                add_if_ally_valid(potential_moves, us, right);
+            }
 
         case KNIGHT: 
             int x = position.x;
