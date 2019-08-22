@@ -16,6 +16,9 @@ struct Pos {
 struct Move {
     Pos from;
     Pos to;
+    bool operator==(const Move &rhs) const {
+        return (from == rhs.from && to == rhs.to);
+    }
 };
 
 class Piece {
@@ -40,18 +43,23 @@ public:
 
     int get_x() const;
     int get_y() const;
+    Pos get_pos() const;
 
-    void set_color(char color_in);
-    void set_type(char type_in);
+    bool get_pawn_skip() const;
 
-    void set_x(int x_in);
-    void set_y(int y_in);
+    void assert_valid() const;
 
-    void set_pawn_skip(bool skip);
+    void set_color(const char color_in);
+    void set_type(const char type_in);
 
-    void set_coord(int x_in, int y_in);
+    void set_x(const int x_in);
+    void set_y(const int y_in);
 
-    void set_coord(Pos pos);
+    void set_pawn_skip(const bool skip);
+
+    void set_coord(const int x_in, const int y_in);
+
+    void set_coord(const Pos pos);
 
     /*this will be painful, needs a big switch statemnt,
     the alternative might be to make a bunch of derived classes
@@ -59,11 +67,11 @@ public:
     this gives the potential moves of a piece given that it is
     the right color, otherwise returns an empty vector, this also disregards
     the king being checked or checkmated as a result of the move*/
-    std::vector<Move> get_moves(char color_in, const std::vector<Pos> & opponent,
-        const std::vector<Pos> & us);
+    std::vector<Move> get_moves(const char color_in, const std::vector<Pos> & opponent,
+        const std::vector<Pos> & us) const;
 
     //checks if our potential position hits other pieces
-    bool hit_piece(const Pos destination, const std::vector<Pos> & target);
+    bool hit_piece(const Pos destination, const std::vector<Pos> & target) const;
 
     /*
     Bishops, Rooks, Queens can move multiple spots but can't skip over other
@@ -74,10 +82,12 @@ public:
     void get_directional_moves(std::vector<Move> & current_set,
         const std::vector<Pos> opponent, const std::vector<Pos> us,
         const bool x_right, const bool x_left, const bool y_down,
-        const bool y_up);
+        const bool y_up) const;
 
+    /*add the considered position into out current move set if
+    it doesn't hit any allied pieces*/
     void add_if_ally_valid(std::vector<Move> & current_set,
-        const std::vector<Pos> & us, const Pos considering);
+        const std::vector<Pos> & us, const Pos considering) const;
 
 private:
     Pos position;
@@ -90,5 +100,8 @@ private:
 
 std::ostream & operator<<(std::ostream &os, const Piece &piece);
 
+std::ostream & operator<<(std::ostream &os, const Pos &pos);
 
-#endif PIECE_H
+std::ostream & operator<<(std::ostream &os, const Move &move);
+
+#endif

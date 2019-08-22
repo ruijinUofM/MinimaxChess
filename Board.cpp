@@ -137,7 +137,7 @@ std::vector<Move> Board::generate_valid_moves(const char ally_char) const {
         for (int j = 0; j < BOARD_SIZE; j++) {
             Piece p = board[i][j];
             upcoming_piece_moves = p.get_moves(ally_char, enemy, ally);
-            for (int k = 0; k < upcoming_piece_moves.size(); k++) {
+            for (unsigned int k = 0; k < upcoming_piece_moves.size(); k++) {
                 if (in_bounds(upcoming_piece_moves[k])) {
                     valid_moves.push_back(upcoming_piece_moves[k]);
                 }
@@ -168,7 +168,7 @@ Pos Board::find_king(char ally) const {
 //if all of these end up in a check then we're in checkmate
 bool Board::checkmate(char ally) const {
     std::vector<Board> checkmate_boards = generate_valid_boards(ally);
-    for (int i = 0; i < checkmate_boards.size(); i++) {
+    for (unsigned int i = 0; i < checkmate_boards.size(); i++) {
         if (!checkmate_boards[i].check(ally)) {
             return false;
         }
@@ -185,7 +185,7 @@ bool Board::check(char ally) const {
 
     std::vector<Move> enemy_moves = generate_valid_moves(enemy);
 
-    for (int i = 0; i < enemy_moves.size(); i++) {
+    for (unsigned int i = 0; i < enemy_moves.size(); i++) {
         if (enemy_moves[i].to == holy_pos) {
             std::cout << "Check incoming from " <<
                 enemy_moves[i].from.x << ", " <<
@@ -208,7 +208,7 @@ int Board::score(char ally) const {
 std::vector<Board> Board::generate_valid_boards(const char c) const {
     std::vector<Board> valid_boards;
     std::vector<Move> valid_moves = generate_valid_moves(c);
-    for (int i = 0; i < valid_moves.size(); i++) {
+    for (unsigned int i = 0; i < valid_moves.size(); i++) {
         //Copy not reference
         Board next_board = *this;
         next_board.execute_move(valid_moves[i]);

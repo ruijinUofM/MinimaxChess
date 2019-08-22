@@ -62,4 +62,4 @@ private:
 
 std::ostream & operator<<(std::ostream &os, const Board &b);
 
-#endif BOARD_H
+#endif
