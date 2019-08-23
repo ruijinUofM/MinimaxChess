@@ -88,6 +88,8 @@ public:
     it doesn't hit any allied pieces*/
     void add_if_ally_valid(std::vector<Move> & current_set,
         const std::vector<Pos> & us, const Pos considering) const;
+    
+    bool operator==(const Piece &rhs) const;
 
 private:
     Pos position;

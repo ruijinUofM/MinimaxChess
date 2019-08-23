@@ -264,6 +264,12 @@ void Piece::get_directional_moves(std::vector<Move> & current_set,
     }
 }
 
+bool Piece::operator==(const Piece &rhs) const {
+    return (position == rhs.position && color == rhs.color
+        && type == rhs.type && pawn_skip == rhs.pawn_skip);
+}
+
+
 std::ostream & operator<<(std::ostream &os, const Piece &piece) {
     if (piece.get_type() == Piece::EMPTY) {
         os << piece.get_type() << piece.get_type();

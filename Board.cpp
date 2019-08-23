@@ -58,6 +58,14 @@ void Board::next_turn() {
     turn++;
 }
 
+int Board::get_turn() const {
+    return turn;
+}
+
+char Board::get_to_move() const {
+    return to_move;
+}
+
 Piece Board::remove(int x, int y) {
     Piece save = board[x][y];
     Piece p;
@@ -72,8 +80,8 @@ Piece Board::remove(Pos pos) {
 
 Piece Board::set(Piece p, int x, int y) {
     Piece save = remove(x, y);
-    board[x][y] = p;
     p.set_coord(x, y);
+    board[x][y] = p;
     return save;
 }
 
@@ -89,6 +97,7 @@ void Board::execute_move(Move move) {
     if (captured.get_type() != Piece::EMPTY) {
         std::cout << "Captured a " << captured << "!" << std::endl;
     }
+    next_turn();
 }
 
 bool Board::in_bounds(Move move) const {
@@ -140,6 +149,7 @@ std::vector<Move> Board::generate_valid_moves(const char ally_char) const {
             for (unsigned int k = 0; k < upcoming_piece_moves.size(); k++) {
                 if (in_bounds(upcoming_piece_moves[k])) {
                     valid_moves.push_back(upcoming_piece_moves[k]);
+                    std::cout << upcoming_piece_moves[k];
                 }
             }
         }
@@ -188,8 +198,7 @@ bool Board::check(char ally) const {
     for (unsigned int i = 0; i < enemy_moves.size(); i++) {
         if (enemy_moves[i].to == holy_pos) {
             std::cout << "Check incoming from " <<
-                enemy_moves[i].from.x << ", " <<
-                enemy_moves[i].from.y << "!" << std::endl;
+                enemy_moves[i].from << "!" << std::endl;
             return true;
         }
     }
@@ -201,6 +210,19 @@ bool Board::stalemate() const {
 }
 
 int Board::score(char ally) const {
+    char opp = Piece::BLACK;
+    if (ally == opp) {
+        opp = Piece::WHITE;
+    }
+    if (checkmate(ally) || check(ally)) {
+        return -1000;
+    }
+    if (checkmate(opp)) {
+        return 1000;
+    }
+    if (check(opp)) {
+        return 100;
+    }
     return 0;
 }
 
