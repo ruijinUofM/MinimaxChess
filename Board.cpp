@@ -1,6 +1,6 @@
 #include "Board.h"
 
-Board::Board() {
+Board::Board() :to_move(Piece::WHITE) , turn(0) {
     int black_pawn_row = 1;
     int black_row = 0;
     int white_pawn_row = 6;
@@ -93,10 +93,8 @@ Piece Board::set(Piece p, Pos pos) {
 void Board::execute_move(Move move) {
     Piece p = remove(move.from);
     p.set_pawn_skip(false);
-    Piece captured = set(p, move.to);
-    if (captured.get_type() != Piece::EMPTY) {
-        std::cout << "Captured a " << captured << "!" << std::endl;
-    }
+    set(p, move.to);
+
     next_turn();
 }
 
@@ -149,7 +147,6 @@ std::vector<Move> Board::generate_valid_moves(const char ally_char) const {
             for (unsigned int k = 0; k < upcoming_piece_moves.size(); k++) {
                 if (in_bounds(upcoming_piece_moves[k])) {
                     valid_moves.push_back(upcoming_piece_moves[k]);
-                    std::cout << upcoming_piece_moves[k];
                 }
             }
         }
@@ -197,8 +194,6 @@ bool Board::check(char ally) const {
 
     for (unsigned int i = 0; i < enemy_moves.size(); i++) {
         if (enemy_moves[i].to == holy_pos) {
-            std::cout << "Check incoming from " <<
-                enemy_moves[i].from << "!" << std::endl;
             return true;
         }
     }

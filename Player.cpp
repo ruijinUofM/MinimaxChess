@@ -1,37 +1,43 @@
 #include "Player.h"
 
+Player::Player() :side(Piece::WHITE) {}
+
+Player::Player(char side_in) : side(side_in) {
+    assert(side_in == Piece::BLACK || side_in == Piece::WHITE);
+}
+
+char Player::get_side() const {
+    return side;
+}
+
+void Player::set_side(char side_in) {
+    assert(side_in == Piece::BLACK || side_in == Piece::WHITE);
+    side = side_in;
+}
+
 class AI : public Player {
-private:
-    char side;
+
 public:
     
+    AI() :Player(Piece::BLACK) {}
+
     AI(char side_in)
-        :side(side_in) {
-        assert(side_in == Piece::BLACK || side_in == Piece::WHITE);
-    }
-
-    char get_side() const {
-        return side;
-    }
-
-    void set_side(char side_in) {
-        assert(side_in == Piece::BLACK || side_in == Piece::WHITE);
-        side = side_in;
-    }
+        :Player(side_in) {}
 
     Move get_next_move(const Board board) const override {
         Move best_move;
-        std::vector<Move> assorted_moves = board.generate_valid_moves(side);
+        std::vector<Move> assorted_moves = board.generate_valid_moves(get_side());
         int best_score = -1000000;
         for (unsigned int i = 0; i < assorted_moves.size(); i++) {
             Board next_considered = board;
             next_considered.execute_move(assorted_moves[i]);
-            int next_considered_score = minimax(next_considered, 6);
+            int next_considered_score = minimax(next_considered, 3);
             if (best_score < next_considered_score) {
                 best_score = next_considered_score;
                 best_move = assorted_moves[i];
             }
         }
+        return best_move;
     }
 
     /*Minimax predicts the score of the entered board assuming the players will follow a
@@ -45,11 +51,11 @@ public:
         //no more turns
         if (depth == 0 || board.endgame()) {
 
-            return board.score(side);
+            return board.score(get_side());
         }
         //if the next move is to be made by the maximizing player (the ai's side)
         //then we find the highest score of the next depth
-        if (board.get_to_move() == side) {
+        if (board.get_to_move() == get_side()) {
             int best_score = -1000000;
             std::vector<Board> valid_boards = 
                 board.generate_valid_boards(board.get_to_move());
@@ -59,6 +65,7 @@ public:
                     best_score = board_true_score;
                 }
             }
+            return best_score;
         }
         //if the next move is to be made by the non_maximizing player (human's side)
         //then we find the lowest score of the next depth
@@ -72,37 +79,32 @@ public:
                     worst_score = board_true_score;
                 }
             }
+            return worst_score;
         }
-
+        assert(false);
+        return 0;
 
     }
 
 };
 
 class Human : public Player {
-private:
-    char side;
+
 public:
 
+    Human() : Player(Piece::WHITE) {}
+
     Human(char side_in) 
-        :side(side_in) {
+        :Player(side_in) {
         assert(side_in == Piece::BLACK || side_in == Piece::WHITE);
     }
 
-    char get_side() const {
-        return side;
-    }
-
-    void set_side(char side_in) {
-        assert(side_in == Piece::BLACK || side_in == Piece::WHITE);
-        side = side_in;
-    }
 
     Move get_next_move(const Board board) const override {
         bool valid = false;
         Move move;
         while (!valid) {
-            std::vector<Move> valid_moves = board.generate_valid_moves(side);
+            std::vector<Move> valid_moves = board.generate_valid_moves(get_side());
             Pos from;
             Pos to;
             std::cout << "Which piece would you like to move?" << std::endl;
@@ -130,6 +132,7 @@ public:
             }
             std::cout << "Invalid move, try again" << std::endl;
         }
+        return { {0, 0}, {0, 0} };
     }
 
     int get_coord() const {
@@ -144,3 +147,10 @@ public:
         return coord;
     }
 };
+
+Player *player_factory(bool human, char side) {
+    if (human) {
+        return new Human(side);
+    }
+    return new AI(side);
+}

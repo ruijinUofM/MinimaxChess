@@ -3,7 +3,6 @@
 
 TEST(gets_sets) {
     Board b;
-
 }
 
 
